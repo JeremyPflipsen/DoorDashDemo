@@ -6,10 +6,15 @@ import com.example.grpcdemo.service.DoorDashServiceGrpcKt
 import com.example.grpcdemo.service.Doordash.Delivery
 import com.example.grpcdemo.service.Doordash.EmptyInput
 import com.example.grpcdemo.service.delivery
+import com.example.grpcdemo.service.emptyInput
 import com.google.gson.Gson
+import com.google.protobuf.empty
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
 import net.devh.boot.grpc.server.service.GrpcService
 import java.security.Key
 import java.time.ZoneOffset
@@ -20,6 +25,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.util.*
+import kotlin.text.Typography.quote
 
 @GrpcService
 class DoorDashService(var appProperties: AppProperties) : DoorDashServiceGrpcKt.DoorDashServiceCoroutineImplBase() {
@@ -39,10 +45,30 @@ class DoorDashService(var appProperties: AppProperties) : DoorDashServiceGrpcKt.
         return delivery { hello = Gson().toJson(deliveryStatus)}
     }
 
-//    override suspend fun manyQuotes(request: EmptyInput): Delivery {
-//        val deliveryStatus:DeliveryStatus = getQuote();
-//        return delivery { hello = Gson().toJson(deliveryStatus)}
-//    }
+    override fun manyQuotes(request: EmptyInput): Flow<Delivery> {
+        val body = """{
+                        "external_delivery_id": "${UUID.randomUUID()}",
+                        "pickup_address": "901 Market Street 6th Floor San Francisco, CA 94103",
+                        "pickup_business_name": "Wells Fargo SF Downtown",
+                        "pickup_phone_number": "+16505555555",
+                        "pickup_instructions": "Enter gate code 1234 on the callbox.",
+                        "dropoff_address": "901 Market Street 6th Floor San Francisco, CA 94103",
+                        "dropoff_business_name": "Wells Fargo SF Downtown",
+                        "dropoff_phone_number": "+16505555555",
+                        "dropoff_instructions": "Enter gate code 1234 on the callbox.",
+                        "order_value": 1999
+                    }"""
+
+        val quotes = runBlocking {
+            val quotesPromises = List(5){0}.map { it -> async {
+                getQuote()
+            } }
+
+            quotesPromises.awaitAll()
+        }
+
+        return quotes.map { quote -> delivery { hello = Gson().toJson(quote) } }.asFlow()
+    }
 
     fun getQuote(): DeliveryStatus {
         val body = """{
