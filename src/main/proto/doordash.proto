@@ -7,6 +7,8 @@ import "google/protobuf/timestamp.proto";
 
 service DoorDashService {
   rpc makeAndCall (EmptyInput) returns (Delivery);
+  rpc quotes (EmptyInput) returns (Delivery);
+
 }
 
 message Delivery {
