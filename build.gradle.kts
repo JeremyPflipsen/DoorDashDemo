@@ -36,6 +36,14 @@ dependencies {
 	implementation("net.devh:grpc-client-spring-boot-starter:2.12.0.RELEASE")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
 
+	implementation("com.google.code.gson:gson:2.10.1")
+
+
+//	jwt
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
 	if (JavaVersion.current().isJava9Compatible) {
 		implementation("javax.annotation:javax.annotation-api:+")
 	}

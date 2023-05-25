@@ -7,9 +7,12 @@ import "google/protobuf/timestamp.proto";
 
 service UserService {
   rpc getUserById (google.protobuf.Int64Value) returns (User);
+  rpc listUsers(ListUsersInput) returns (stream User);
 }
 
 message User {
   int64 id = 1;
   string name = 2;
 }
+
+message ListUsersInput {}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package com.example.grpcdemo.service;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+service DoorDashService {
+  rpc makeAndCall (EmptyInput) returns (Delivery);
+}
+
+message Delivery {
+  string hello = 1;
+}
+
+message EmptyInput {}
